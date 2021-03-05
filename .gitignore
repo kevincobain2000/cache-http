@@ -1,0 +1,15 @@
+node_modules
+.DS_STORE
+build/
+*.pid
+jmeter.log
+coverage.txt
+coverage.html
+c.out
+_test
+.idea
+*.iml
+*.out
+*.log
+.env
+main
