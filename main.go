@@ -30,7 +30,7 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(touch())
-	// basicAuth(e)
+	basicAuth(e)
 
 	e.GET("/health", health)
 	e.Static("/assets", assetsPath)
