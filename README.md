@@ -32,7 +32,7 @@ jobs:
     - name: Yarn Install (with cache)
       run: |
         hit_tar=${{ runner.os }}-node-${{ matrix.node-versions }}-${{ hashFiles('yarn.lock') }}.tar.gz
-        hit_url=https://${{env.CACHE_HTTP_API}}/cache-http/assets/$hit_tar
+        hit_url=https://${{env.CACHE_HTTP_API}}/assets/$hit_tar
 
         install_command="yarn install"
         dst_folder=node_modules
@@ -49,13 +49,11 @@ jobs:
           tar zcf $hit_tar $dst_folder && \
           curl -X POST -u ${{ secrets.CACHE_HTTP_API_USER }}:${{ secrets.CACHE_HTTP_API_PASS }} \
             --noproxy ${{ env.CACHE_HTTP_API }} \
-            --form file=@$hit_tar ${{env.CACHE_HTTP_API}}/cache-http/upload && \
+            --form file=@$hit_tar ${{env.CACHE_HTTP_API}}/upload && \
           echo "Cache upload OK"
 
         tar xzf $hit_tar
         echo Dependency Install finished
-
-
 ```
 
 #### Deploy
