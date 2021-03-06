@@ -1,3 +1,9 @@
+#### About
+
+Alternate solution to action/cache for GHES and self-hosted runners on Docker.
+
+https://github.com/actions/cache/issues/505
+
 #### Run
 ```
 go run main.go 3000
