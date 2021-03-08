@@ -23,8 +23,6 @@ jobs:
       matrix:
         node-versions: ['10.16.3', '14.9']
     runs-on: self-hosted
-    env:
-      CACHE_HTTP_API: your-url.com
     steps:
     - name: Setup Node.js ${{ matrix.node-versions }}
       uses: actions/setup-node@v1
