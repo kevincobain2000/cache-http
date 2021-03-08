@@ -36,30 +36,14 @@ jobs:
     #   run: yarn install
 
     - name: Yarn Install (with cache)
-      run: |
-        hit_tar=${{ runner.os }}-node-${{ matrix.node-versions }}-${{ hashFiles('yarn.lock') }}.tar.gz
-        hit_url=https://${{env.CACHE_HTTP_API}}/assets/$hit_tar
-
-        install_command="yarn install"
-        dst_folder=node_modules
-
-        echo hit_url: $hit_url
-        curl -X GET -u ${{ secrets.CACHE_HTTP_API_USER }}:${{ secrets.CACHE_HTTP_API_PASS }} \
-          --noproxy ${{ env.CACHE_HTTP_API }} \
-          -s $hit_url > $hit_tar
-        file $hit_tar | grep -q 'gzip compressed data' && response=200 || response=404
-
-        { test "$response" == 404; } && echo Cache Miss && \
-          rm -rf $dst_folder && \
-          $install_command && \
-          tar zcf $hit_tar $dst_folder && \
-          curl -X POST -u ${{ secrets.CACHE_HTTP_API_USER }}:${{ secrets.CACHE_HTTP_API_PASS }} \
-            --noproxy ${{ env.CACHE_HTTP_API }} \
-            --form file=@$hit_tar ${{env.CACHE_HTTP_API}}/upload && \
-          echo "Cache upload OK"
-
-        tar xzf $hit_tar
-        echo Dependency Install finished
+      uses: kevincobain2000/action-cache-http@v1.0.3
+      with:
+        version: ${{ matrix.node-versions }}
+        lock_file: yarn.lock
+        install_command: yarn install
+        destination_folder: node_modules
+        cache_http_api: "https://yourdomain.com/path/to/installation/cache-http"
+        http_proxy: ""
 ```
 
 #### Deploy
