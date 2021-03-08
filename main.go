@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/joho/godotenv"
-	// "github.com/k0kubun/pp"
 	echo "github.com/labstack/echo/v4"
 	middleware "github.com/labstack/echo/v4/middleware"
 	"github.com/tylerb/graceful"
@@ -81,7 +80,7 @@ func serveGracefully(e *echo.Echo) {
 	}
 	port := os.Args[1]
 	e.Server.Addr = "localhost:" + port
-	log.Printf("localhost: %s", port)
+	log.Printf("started at localhost:%s", port)
 	if err := graceful.ListenAndServe(e.Server, 60*time.Second); err != nil {
 		log.Fatalf("Graceful error : %v", err)
 	}
