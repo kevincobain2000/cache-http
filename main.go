@@ -79,7 +79,7 @@ func serveGracefully(e *echo.Echo) {
 		log.Fatal("no port given as param")
 	}
 	port := os.Args[1]
-	e.Server.Addr = "localhost:" + port
+	e.Server.Addr = ":" + port
 	log.Printf("started at localhost:%s", port)
 	if err := graceful.ListenAndServe(e.Server, 60*time.Second); err != nil {
 		log.Fatalf("Graceful error : %v", err)
