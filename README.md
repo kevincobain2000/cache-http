@@ -49,8 +49,8 @@ jobs:
 #### Deploy
 
 ```
-go get github.com/lestrrat/go-server-starter/cmd/start_server
-start_server --pid-file /path/to/pids/3000.pid -- main 3000 > /dev/null 2>&1 &
+
+./main 3000 /any/path/to/pids/ > /dev/null 2>&1 &
 ```
 
 #### Development
