@@ -2,16 +2,20 @@ package main
 
 import (
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
+	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
+	"github.com/fvbock/endless"
 	"github.com/joho/godotenv"
 	echo "github.com/labstack/echo/v4"
 	middleware "github.com/labstack/echo/v4/middleware"
-	"github.com/tylerb/graceful"
 )
 
 // successResponse ...
@@ -37,7 +41,9 @@ func main() {
 	e.Static("/assets", assetsPath)
 	e.POST("/upload", upload)
 
-	serveGracefully(e)
+    port := os.Args[1]
+    pidDir := os.Args[2]
+	serveGracefully(e, "localhsot", port, pidDir)
 
 }
 
@@ -74,16 +80,28 @@ func basicAuth(e *echo.Echo) {
 	}))
 }
 
-func serveGracefully(e *echo.Echo) {
-	if len(os.Args) <= 1 {
-		log.Fatal("no port given as param")
-	}
-	port := os.Args[1]
-	e.Server.Addr = ":" + port
-	log.Printf("started at localhost:%s", port)
-	if err := graceful.ListenAndServe(e.Server, 60*time.Second); err != nil {
-		log.Fatalf("Graceful error : %v", err)
-	}
+func serveGracefully(e *echo.Echo, serverAddr string, port, pidDir string) {
+    e.Server.Addr = serverAddr + ":" + port
+    server := endless.NewServer(e.Server.Addr, e)
+    server.BeforeBegin = func(add string) {
+        log.Print("info: actual pid is", syscall.Getpid())
+        pidFile := filepath.Join(pidDir, port+".pid")
+        err := os.Remove(pidFile)
+        if err != nil {
+            log.Print("error: pid file error: ", err)
+        } else {
+            log.Print("success: pid file success", pidFile)
+        }
+        err = ioutil.WriteFile(pidFile, []byte(strconv.Itoa(os.Getpid())), 0644)
+        if err != nil {
+            log.Print("error: write pid file error: ", err)
+        } else {
+            log.Print("success: write pid file success", pidFile)
+        }
+    }
+    if err := server.ListenAndServe(); err != nil {
+        log.Print("critical: graceful error: ", err)
+    }
 }
 
 func loadEnv() {
