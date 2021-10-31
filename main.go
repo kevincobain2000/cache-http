@@ -44,7 +44,7 @@ func main() {
     port := "3000"
     pidDir := "./"
     // check os args length
-    if len(os.Args) >= 2 {
+    if len(os.Args) >= 3 {
         port = os.Args[1]
         pidDir = os.Args[2]
     }
