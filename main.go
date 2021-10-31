@@ -41,9 +41,15 @@ func main() {
 	e.Static("/assets", assetsPath)
 	e.POST("/upload", upload)
 
-    port := os.Args[1]
-    pidDir := os.Args[2]
-	serveGracefully(e, "localhsot", port, pidDir)
+    port := "3000"
+    pidDir := "./"
+    // check os args length
+    if len(os.Args) >= 2 {
+        port = os.Args[1]
+        pidDir = os.Args[2]
+    }
+
+	serveGracefully(e, "localhost", port, pidDir)
 
 }
 
