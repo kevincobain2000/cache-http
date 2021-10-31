@@ -25,6 +25,12 @@ type successResponse struct {
 
 const assetsPath = "assets/"
 
+type Params struct {
+    Host    string `json:"host"`
+    Port    string `json:"port"`
+    PidDir  string `json:"pid"`
+}
+
 func main() {
 	e := echo.New()
 
@@ -41,16 +47,33 @@ func main() {
 	e.Static("/assets", assetsPath)
 	e.POST("/upload", upload)
 
-    port := "3000"
-    pidDir := "./"
-    // check os args length
-    if len(os.Args) >= 3 {
-        port = os.Args[1]
-        pidDir = os.Args[2]
+    params := cliParams()
+
+	serveGracefully(e, params.Host, params.Port, params.PidDir)
+
+}
+
+//named paramters
+func cliParams() Params {
+    params := Params{
+        Host: "localhost",
+        Port: "3000",
+        PidDir:  "./",
     }
-
-	serveGracefully(e, "localhost", port, pidDir)
-
+    //go run main.go -host=localhost -port=3000 -pidDir=./
+    for _, arg := range os.Args {
+        if strings.HasPrefix(arg, "-host=") || strings.HasPrefix(arg, "--host=") {
+            params.Host = strings.ReplaceAll(arg, "-host=", "")
+            params.Host = strings.ReplaceAll(arg, "--host=", "")
+        }
+        if strings.HasPrefix(arg, "-port=") || strings.HasPrefix(arg, "--port=") {
+            params.Port = strings.ReplaceAll(arg, "--port=", "")
+        }
+        if strings.HasPrefix(arg, "-pidDir=") || strings.HasPrefix(arg, "--pidDir=") {
+            params.PidDir = strings.ReplaceAll(arg, "--pidDir=", "")
+        }
+    }
+    return params
 }
 
 func touch() echo.MiddlewareFunc {
@@ -86,8 +109,8 @@ func basicAuth(e *echo.Echo) {
 	}))
 }
 
-func serveGracefully(e *echo.Echo, serverAddr string, port, pidDir string) {
-    e.Server.Addr = serverAddr + ":" + port
+func serveGracefully(e *echo.Echo, host string, port, pidDir string) {
+    e.Server.Addr = host + ":" + port
     server := endless.NewServer(e.Server.Addr, e)
     server.BeforeBegin = func(add string) {
         log.Print("info: actual pid is", syscall.Getpid())
@@ -96,13 +119,13 @@ func serveGracefully(e *echo.Echo, serverAddr string, port, pidDir string) {
         if err != nil {
             log.Print("error: pid file error: ", err)
         } else {
-            log.Print("success: pid file success", pidFile)
+            log.Print("success: pid file success: ", pidFile)
         }
         err = ioutil.WriteFile(pidFile, []byte(strconv.Itoa(os.Getpid())), 0644)
         if err != nil {
             log.Print("error: write pid file error: ", err)
         } else {
-            log.Print("success: write pid file success", pidFile)
+            log.Print("success: write pid file success: ", pidFile)
         }
     }
     if err := server.ListenAndServe(); err != nil {

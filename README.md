@@ -49,8 +49,8 @@ jobs:
 #### Deploy
 
 ```
-
-./main 3000 /any/path/to/pids/ > /dev/null 2>&1 &
+go build -o main
+./main -host=localhost -port=3000 -pidDir=./ > /dev/null 2>&1 &
 ```
 
 #### Development
