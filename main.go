@@ -25,6 +25,7 @@ type successResponse struct {
 
 const assetsPath = "assets/"
 
+// Params for the server
 type Params struct {
     Host    string `json:"host"`
     Port    string `json:"port"`
@@ -81,7 +82,7 @@ func touch() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			req := c.Request()
 			uri := req.RequestURI
-			if strings.HasPrefix(uri, "/assets/") == true {
+			if strings.HasPrefix(uri, "/assets/") {
 				filename := strings.ReplaceAll(uri, "/assets/", "")
 				currenttime := time.Now().Local()
 
@@ -121,7 +122,7 @@ func serveGracefully(e *echo.Echo, host string, port, pidDir string) {
         } else {
             log.Print("success: pid file success: ", pidFile)
         }
-        err = ioutil.WriteFile(pidFile, []byte(strconv.Itoa(os.Getpid())), 0644)
+        err = ioutil.WriteFile(pidFile, []byte(strconv.Itoa(os.Getpid())), 0600)
         if err != nil {
             log.Print("error: write pid file error: ", err)
         } else {
@@ -166,7 +167,6 @@ func upload(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	defer dst.Close()
 
 	// Copy
 	if _, err = io.Copy(dst, src); err != nil {
