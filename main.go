@@ -82,7 +82,7 @@ func touch() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			req := c.Request()
 			uri := req.RequestURI
-			if strings.HasPrefix(uri, "/assets/") == true {
+			if strings.HasPrefix(uri, "/assets/") {
 				filename := strings.ReplaceAll(uri, "/assets/", "")
 				currenttime := time.Now().Local()
 
