@@ -38,7 +38,7 @@ jobs:
       matrix:
         node-versions: ['10.16.3', '14.9']
     runs-on: self-hosted
-  # Cache service for GHE / self-hosted runners
+    # Cache service for GHE / self-hosted runners
     services:
       cache-http:
         image: docker.pkg.github.com/SOMEPATH/FIXME/cache-http:3
@@ -84,6 +84,24 @@ jobs:
 
 If for some reason you want to use the Dockerized version of this service, below are details
 on how to run it yourself. Also see the example `.sh` scripts distributed with the project.
+
+**Without Docker**
+
+```yml
+    - name: Yarn Install (with cache)
+      uses: kevincobain2000/action-cache-http@v3
+      with:
+        version: ${{ matrix.node-versions }}
+        lock_file: yarn.lock
+        install_command: yarn install
+        operating_dir: ./
+        destination_folder: node_modules
+        # For Dockerized builds, this should match the service name.
+        # cache_http_api: "http://cache-http"
+        # For direct-on-host builds, use the custom port you mapped above
+        cache_http_api: "http://127.0.0.1:3000"
+        http_proxy: ""
+```
 
 #### Run
 ```
