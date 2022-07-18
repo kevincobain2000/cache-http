@@ -58,7 +58,7 @@ func main() {
 func cliParams() Params {
     params := Params{
         Host: "localhost",
-        Port: "3000",
+        Port: "80", //testing railway
         PidDir:  "./",
     }
     //go run main.go -host=localhost -port=3000 -pidDir=./
